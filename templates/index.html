@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>FYP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+    <script>
+        function showTab(tabId) {
+            var tabs = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+            }
+            document.getElementById(tabId).style.display = "block";
+        }
+
+        function showProcessingMessage() {
+            document.getElementById("processing-message").style.display = "block";
+        }
+    </script>
+</head>
+<body class="h-100vh bg-gray-200">
+
+    <div class="h-100vh flex justify-center align-center">
+        <h1>
+            Pembahagian dan Pengelasan Imej MRI
+        </h1>
+        <br>
+        <div class="content">
+
+            <!-- Upload Tab -->
+            <div id="upload-tab" class="tab-content active">
+                <h2>Upload a DICOM File</h2>
+                <form action="/" method="post" enctype="multipart/form-data" onsubmit="showProcessingMessage()">
+                    <input type="file" name="file" accept=".dcm" required>
+                    <input type="submit" value="Upload & Process">
+                </form>
+                <p id="processing-message" style="display: none; color: yellow;">Processing DICOM... Please wait.</p>
+            </div>
+    
+            <!-- Results Tab (Hidden Until Processed) -->
+            <div id="results-tab" class="tab-content" style="display: {{ 'block' if lesion_count is not none else 'none' }};">
+                <h2>Lesion Detection Results</h2>
+                {% if lesion_count is not none %}
+                    <p><strong>Patient Name:</strong> {{ patient }}</p>
+                    <p><strong>Modality:</strong> {{ modality }}</p>
+                    <p><strong>Study Date:</strong> {{ study_date }}</p>
+                    <p><strong>Lesions Found:</strong> {{ lesion_count }}</p>
+                    <img src="{{ url_for('static', filename='processed_image.png') }}" alt="Processed DICOM">
+                {% else %}
+                    <p>No results available. Upload a DICOM file first.</p>
+                {% endif %}
+            </div>
+    
+        </div>
+    </div>
+    
+</body>
+</html>
