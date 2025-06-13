@@ -7,4 +7,4 @@ __pycache__/
 
 nnUNet_raw/*
 nnUNet_preprocessed/*
-nnUNet_results/*
+nnUNet_results/nnUNet/*
