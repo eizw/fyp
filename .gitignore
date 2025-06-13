@@ -6,3 +6,5 @@ data/
 __pycache__/
 
 nnUNet_raw/*
+nnUNet_preprocessed/*
+nnUNet_results/*
