@@ -3,11 +3,16 @@
 <html lang="en">
 <head>
     <title>FYP</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='papaya.css')}}">
+    <script type="text/javascript" src="{{ url_for('static', filename='papaya.js') }}"></script>
+    
+    <script type="text/javascript">
+        const image_server = "{{ image_server }}";
 
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
-    <script>
         function showTab(tabId) {
             var tabs = document.getElementsByClassName("tab-content");
             for (var i = 0; i < tabs.length; i++) {
@@ -17,45 +22,152 @@
         }
 
         function showProcessingMessage() {
-            document.getElementById("processing-message").style.display = "block";
+            document.getElementById("processing-message").style.display = "flex";
         }
+
+        var params = {};
+        if ("{{image_file}}" != "") {
+            var image_file = image_server + "{{image_file}}";
+            var segmentation_file = image_server + "{{segmentation_file}}";
+            params["images"] = [
+                image_file, 
+                segmentation_file,
+            ];
+            window.papayaLoadableImages = [image_file, segmentation_file];
+        }
+        console.log(params["images"])
+        params["smoothDisplay"] = false;
+        params["kioskMode"] = true;
+        params["mainView"] = "axial";
+
+        // params.files = [];
+        // if ("{{image_file}}" != "") {
+        //     params.files[0] = "{{image_file}}";
+        //     params.files[1] = "{{segmentation_file}}";
+        // }
+        // console.log(params.files)
+        // add other parameters...
+
+        // papaya.Container.resetViewer(0, params);
+        // params["myOverlayImage.nii.gz"] = {"min": 4, "max": 10};
     </script>
+    <style>
+        #papayaContainer0 {
+            margin: 0;
+        }
+    </style>
 </head>
-<body class="h-100vh bg-gray-200">
+<body class="h-screen bg-gray-200 flex">
+    <div class="flex-1 flex flex-col h-screen justify-center items-center">
+        <!-- Upload Tab -->
+        <div id="upload-tab" class="tab-content active 
+            flex-1 flex flex-col w-full justify-center gap-7 px-24"
+        >
+            <h1 class="flex text-left text-5xl">
+                Pembahagian dan<br>
+                Pengelasan<br> 
+                Imej MRI
+            </h1>
 
-    <div class="h-100vh flex justify-center align-center">
-        <h1>
-            Pembahagian dan Pengelasan Imej MRI
-        </h1>
-        <br>
-        <div class="content">
+            <form action="/" method="post" enctype="multipart/form-data" 
+                onsubmit="showProcessingMessage()"
+                class="flex flex-col w-full justify-center items-center gap-5"
+            >
+                <div class="flex flex-col justify-center w-full">
+                    <label class="flex-1 font-medium text-gray-900 text-left text-xl" for="file-input">
+                        Upload a DICOM/NIFTI File <br />
+                        <span class="text-sm">Supported formats: .dcm, .nii.gz</span>
+                    </label>
+                    <input class="block text-gray-900 border border-gray-300 rounded-lg 
+                        cursor-pointer bg-gray-50 focus:outline-none 
+                        px-3 py-2 w-full" 
+                        id="file-input" type="file" name="file" accept=".dcm,.nii.gz" required
+                    > 
+                </div>
 
-            <!-- Upload Tab -->
-            <div id="upload-tab" class="tab-content active">
-                <h2>Upload a DICOM File</h2>
-                <form action="/" method="post" enctype="multipart/form-data" onsubmit="showProcessingMessage()">
-                    <input type="file" name="file" accept=".dcm" required>
-                    <input type="submit" value="Upload & Process">
-                </form>
-                <p id="processing-message" style="display: none; color: yellow;">Processing DICOM... Please wait.</p>
-            </div>
-    
-            <!-- Results Tab (Hidden Until Processed) -->
-            <div id="results-tab" class="tab-content" style="display: {{ 'block' if lesion_count is not none else 'none' }};">
-                <h2>Lesion Detection Results</h2>
-                {% if lesion_count is not none %}
-                    <p><strong>Patient Name:</strong> {{ patient }}</p>
-                    <p><strong>Modality:</strong> {{ modality }}</p>
-                    <p><strong>Study Date:</strong> {{ study_date }}</p>
-                    <p><strong>Lesions Found:</strong> {{ lesion_count }}</p>
-                    <img src="{{ url_for('static', filename='processed_image.png') }}" alt="Processed DICOM">
-                {% else %}
-                    <p>No results available. Upload a DICOM file first.</p>
-                {% endif %}
-            </div>
-    
+                <div class="flex justify-center items-center">
+                    <button class="bg-blue-500 py-3 px-5 rounded-lg text-white"
+                        type="submit" value="Submit"
+                    >Submit</button>
+                    <p id="processing-message" style="display: none; color: yellow;">Processing DICOM... Please wait.</p>
+                </div>
+            </form>
+            <p id="processing-message" style="display: none; color: yellow;">Processing Image... Please wait.</p>
         </div>
+
+        <!-- Results Tab (Hidden Until Processed) -->
+        <!-- <div id="results-tab" class="tab-content" style="display: {{ 'block' if lesion_count is not none else 'none' }};">
+            <h2>Lesion Detection Results</h2>
+            {% if lesion_count is not none %}
+                <p><strong>Patient Name:</strong> {{ patient }}</p>
+                <p><strong>Modality:</strong> {{ modality }}</p>
+                <p><strong>Study Date:</strong> {{ study_date }}</p>
+                <p><strong>Lesions Found:</strong> {{ lesion_count }}</p>
+            {% else %}
+                <p>No results available. Upload a DICOM file first.</p>
+            {% endif %}
+        </div> -->
     </div>
-    
+
+    <div class="flex-1 flex flex-col h-screen justify-center items-center gap-3 px-18">
+        {% if image_file %}
+            <p class="flex-1"></p>
+            <div class="papaya flex-1"
+                data-params="params"
+            ></div>
+            <p class="flex-1 text-2xl">Detector tumor: ALT</p>
+        {% else %}
+            <p class="flex-1 flex items-end">No results available. Upload a DICOM file first</p>
+            <img 
+                src="{{ url_for('static', filename='placeholder_image.svg') }}" 
+                alt="Processed Image"
+                class="h-auto max-w-full object-cover"
+            >
+            <p class="flex-1"></p>
+        {% endif %}
+        
+    </div>
+
+    <!-- <script>
+        window.onload = function () {
+            // Papaya settings
+            var params = {};
+            params["kioskMode"] = true;
+            params["worldSpace"] = true;
+            params["expandable"] = false;
+
+            papaya.Container.startPapaya();
+
+            document.getElementById('file-input').addEventListener('change', function (e) {
+                var file = e.target.files[0];
+                if (!file) return;
+
+                var reader = new FileReader();
+
+                reader.onload = function (event) {
+                    // Convert ArrayBuffer to base64
+                    var arrayBuffer = event.target.result;
+                    var bytes = new Uint8Array(arrayBuffer);
+                    var binary = '';
+                    for (var i = 0; i < bytes.byteLength; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    var base64 = btoa(binary);
+
+                    // Format as Papaya loadable image
+                    var imageData = "data:application/octet-stream;base64," + base64;
+
+                    // Re-initialize viewer with uploaded file
+                    papaya.Container.resetViewer(0, [imageData]);
+                };
+
+                reader.readAsArrayBuffer(file);
+            });
+
+        }
+    </script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 </html>
+
+<!-- {{ url_for('static', filename='processed_image.png') }} -->

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- <link rel="stylesheet" href="../public/css/style.css"> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="h-screen bg-gray-200 flex">
+    <div class="flex-1 justify-center items-center flex">
+        <form action="/login" method="post"
+            class="flex flex-col w-full mx-24 gap-3"
+        >
+            <h1 class="text-center text-xl">Login</h1>
+            <input type="text" placeholder="ID"
+                class="bg-white px-3 py-2 rounded-md border-2 border-gray-500 border-solid"
+            >
+            <input type="password" placeholder="Password"
+                class="bg-white px-3 py-2 rounded-md border-2 border-gray-500 border-solid"
+            >
+            <div class="flex justify-center items-center">
+                <button class="bg-blue-500 py-3 px-5 rounded-lg text-white"
+                    type="submit" value="Submit"
+                >Login</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="flex-1 flex flex-col h-screen justify-center items-center gap-3 px-5">
+        <img 
+            src="{{ url_for('static', filename='login_image.png') }}" 
+            alt=""
+            class="h-auto max-w-full object-cover"
+        >
+    </div>
+</body>
+</html>
