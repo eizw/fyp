@@ -5,6 +5,11 @@ renv/
 worc_data/*
 
 data/
+lipoma_data/
+tempsave/
+uploads/*
+Features/*
+
 
 __pycache__/
 
